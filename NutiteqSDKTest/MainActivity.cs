@@ -7,8 +7,6 @@ using Android.Widget;
 using Android.OS;
 using Com.Nutiteq;
 using Com.Nutiteq.Projections;
-using Com.Nutiteq.Rasterlayers;
-using Com.Nutiteq.Vectorlayers;
 using NutiteqComponents;
 using NutiteqStyle;
 using NutiteqGeometry;
@@ -17,6 +15,7 @@ using Com.Nutiteq.UI;
 using Android.Graphics;
 using Com.Nutiteq.Log;
 using Com.Nutiteq.Layers.Vector;
+using Com.Nutiteq.Vectorlayers;
 using Com.Nutiteq.Roofs;
 using Com.Nutiteq.Layers.Raster;
 
@@ -52,14 +51,15 @@ namespace NutiteqSDKTest
 
 
 			// set online base layer with MapQuest Open Tiles
-			//view.Layers.BaseLayer = new TMSMapLayer(proj, 0, 18, 0, "http://otile1.mqcdn.com/tiles/1.0.0/osm/", "/", ".png");
+			view.Layers.BaseLayer = new TMSMapLayer(proj, 0, 18, 0, "http://otile1.mqcdn.com/tiles/1.0.0/osm/", "/", ".png");
 
+			/*
 			//set offline base layer from MBTiles file
-			//set path
-
+			//TODO: set path properly
 			String MbTilePath = "/sdcard/europe-tilemill-mbtiles.sqlite";
 
 			view.Layers.BaseLayer = new MBTilesMapLayer (proj, 0, 5, 1, MbTilePath, this);
+			*/
 
 			// start map
 			view.StartMapping ();
@@ -79,14 +79,14 @@ namespace NutiteqSDKTest
 			Label markerLabel = new DefaultLabel ("San Francisco", "Here is a marker");
 
 			// define location of the marker, it must be converted to base map coordinate system
-			MapPos markerLocation = view.Layers.BaseLayer.Projection.FromWgs84 (-122.416667f, 37.766667f);
-			MapPos london = view.Layers.BaseLayer.Projection.FromWgs84 (0.0f, 51.0f);
+			MapPos SanFrancisco = view.Layers.BaseLayer.Projection.FromWgs84 (-122.416667f, 37.766667f);
+			MapPos London = view.Layers.BaseLayer.Projection.FromWgs84 (0.0f, 51.0f);
 
 			// create layer and add object to the layer, finally add layer to the map. 
 			// All overlay layers must be same projection as base layer, so we reuse it
 			MarkerLayer markerLayer = new MarkerLayer(view.Layers.BaseLayer.Projection);
 
-			markerLayer.Add(new Marker(markerLocation, markerLabel, markerStyle, markerLayer));
+			markerLayer.Add(new Marker(SanFrancisco, markerLabel, markerStyle, markerLayer));
 			view.Layers.AddLayer(markerLayer);
 
 			// 3d building layer
@@ -121,8 +121,12 @@ namespace NutiteqSDKTest
 			view.Layers.AddLayer (Poly3DLayer);
 
 			// set map center and zoom
-			view.FocusPoint = london;
+			view.FocusPoint = SanFrancisco;
 			view.Zoom = 5.0f;
+
+			// set listener for map events
+			MapListener listener = new MyMapListener ();
+			view.Options.MapListener = listener;
 
 		}
 	}
